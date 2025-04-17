@@ -24,6 +24,13 @@ interface TransactionBreakdown {
   };
 }
 
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
+};
+
 export const CalculationResults: React.FC<CalculationResultsProps> = ({
   participants,
   expenses,
@@ -212,7 +219,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
   };
 
   const [balances, setBalances] = useState<{ [participant: string]: number }>({});
-  const [transactions, setTransactions]: any = useState({ byExpense: {}, summary: {} });
+  const [transactions, setTransactions] = useState<TransactionBreakdown>({ byExpense: {}, summary: {} });
 
   useEffect(() => {
     setBalances(calculateBalances());
@@ -235,7 +242,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
               <ul>
                 {Object.entries(balances).map(([participant, balance]) => (
                   <li key={participant}>
-                    {participant}: ${balance.toFixed(2)}
+                    {participant}: {formatCurrency(balance)}
                   </li>
                 ))}
               </ul>
@@ -252,7 +259,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
                     {Object.entries(expenseTransactions).map(([debtor, creditors]) => (
                       Object.entries(creditors).map(([creditor, amount]) => (
                         <li key={`${debtor}-${creditor}`}>
-                          {debtor} owes {creditor} ${amount.toFixed(2)}
+                          {debtor} owes {creditor} {formatCurrency(amount)}
                         </li>
                       ))
                     ))}
@@ -268,7 +275,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
                               const transactionKey = `${debtor}-${creditor}`;
                               return (
                                   <li key={transactionKey}>
-                                      {debtor} owes {creditor} ${amount.toFixed(2)} (Total)
+                                      {debtor} owes {creditor} {formatCurrency(amount)} (Total)
                                   </li>
                               );
                           }

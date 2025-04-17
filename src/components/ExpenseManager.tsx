@@ -19,6 +19,13 @@ interface ExpenseManagerProps {
   setExpenses: (expenses: any[]) => void;
 }
 
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
+};
+
 export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
   participants,
   expenses,
@@ -244,7 +251,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                 >
                   <div className="flex-1">
                     <p className="font-semibold">{expense.name}</p>
-                    <p>Amount: ${expense.amount}</p>
+                    <p>Amount: {formatCurrency(expense.amount)}</p>
                     <p>Payer: {expense.payer}</p>
                     <p>Involved: {expense.involvedParticipants.join(', ')}</p>
                     <p>Split Evenly: {expense.splitEvenly ? 'Yes' : 'No'}</p>
@@ -254,7 +261,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                         <ul>
                           {Object.entries(expense.manualContributions).map(([participant, contribution]) => (
                             <li key={participant}>
-                              {participant}: ${contribution}
+                              {participant}: {formatCurrency(contribution)}
                             </li>
                           ))}
                         </ul>
