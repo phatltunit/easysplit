@@ -13,15 +13,15 @@ interface TransactionBreakdown {
   byExpense: {
     [expenseId: string]: {
       [debtor: string]: {
-        [creditor: string]: number;
-      };
-    };
-  };
+        [creditor: string]: number
+      }
+    }
+  },
   summary: {
     [debtor: string]: {
-      [creditor: string]: number;
-    };
-  };
+      [creditor: string]: number
+    }
+  }
 }
 
 export const CalculationResults: React.FC<CalculationResultsProps> = ({
@@ -149,7 +149,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
   };
 
   const [balances, setBalances] = useState<{ [participant: string]: number }>({});
-  const [transactions, setTransactions<{ byExpense: { [expenseId: string]: { [debtor: string]: { [creditor: string]: number } } }; summary: { [debtor: string]: { [creditor: string]: number } } }>({ byExpense: {}, summary: {} });
+  const [transactions, setTransactions] = useState<TransactionBreakdown>({ byExpense: {}, summary: {} });
 
   useEffect(() => {
     setBalances(calculateBalances());
