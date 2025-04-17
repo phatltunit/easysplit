@@ -107,7 +107,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
       while (Object.keys(positiveExpenseBalances).length > 0 && Object.keys(negativeExpenseBalances).length > 0) {
         const creditor = Object.keys(positiveExpenseBalances).reduce((a, b) => positiveExpenseBalances[a] > positiveExpenseBalances[b] ? a : b);
         const debtor = Object.keys(negativeExpenseBalances).reduce((a, b) => negativeExpenseBalances[a] > negativeExpenseBalances[b] ? a : b);
-        const settleAmount = Math.min(positiveExpenseBalances[creditor], negativeExpenseBalances[debtor]);
+        let settleAmount = Math.min(positiveExpenseBalances[creditor], negativeExpenseBalances[debtor]);
 
         if (!transactionsByExpense[id][debtor]) {
           transactionsByExpense[id][debtor] = {};
@@ -115,7 +115,22 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
         if (!transactionsByExpense[id][debtor][creditor]) {
           transactionsByExpense[id][debtor][creditor] = 0;
         }
+
+        // If creditor already owes debtor, subtract from settleAmount
+        if (transactionsByExpense[id][creditor] && transactionsByExpense[id][creditor][debtor]) {
+          const existingDebt = transactionsByExpense[id][creditor][debtor];
+          if (settleAmount > existingDebt) {
+            settleAmount -= existingDebt;
+            transactionsByExpense[id][creditor][debtor] = 0;
+            delete transactionsByExpense[id][creditor][debtor];
+          } else {
+            transactionsByExpense[id][creditor][debtor] -= settleAmount;
+            settleAmount = 0;
+          }
+        }
+
         transactionsByExpense[id][debtor][creditor] += settleAmount;
+
 
         positiveExpenseBalances[creditor] -= settleAmount;
         negativeExpenseBalances[debtor] -= settleAmount;
