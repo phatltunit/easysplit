@@ -149,7 +149,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
   };
 
   const [balances, setBalances] = useState<{ [participant: string]: number }>({});
-  const [transactions, setTransactions<TransactionBreakdown>({ byExpense: {}, summary: {} });
+  const [transactions, setTransactions<{ byExpense: { [expenseId: string]: { [debtor: string]: { [creditor: string]: number } } }; summary: { [debtor: string]: { [creditor: string]: number } } }>({ byExpense: {}, summary: {} });
 
   useEffect(() => {
     setBalances(calculateBalances());
