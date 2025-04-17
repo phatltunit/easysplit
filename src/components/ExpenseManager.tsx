@@ -242,7 +242,9 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                   key={expense.id}
                   className="flex items-center justify-between mb-2"
                 >
-                  <span>{expense.name}</span>
+                  <span>
+                    {expense.name} - ${expense.amount} paid by {expense.payer} - Involved: {expense.involvedParticipants.join(', ')}
+                  </span>
                   <Button
                     variant="destructive"
                     size="icon"
