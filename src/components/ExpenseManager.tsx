@@ -169,7 +169,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
           <div>
             <Label>Involved Participants</Label>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={toggleSelectAll}>
+              <Button size="sm" onClick={toggleSelectAll}>
                 {involvedParticipants.length === participants.length
                   ? "Deselect All"
                   : "Select All"}
