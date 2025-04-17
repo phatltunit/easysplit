@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -29,12 +29,12 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
         involvedParticipants.forEach((participant) => {
           balances[participant] -= splitAmount;
         });
-        balances[payer] += amount - (amount / involvedParticipants.length) * involvedParticipants.filter(p => p === payer).length;
+        balances[payer] += amount;
       } else if (manualContributions) {
         Object.entries(manualContributions).forEach(([participant, contribution]) => {
           balances[participant] -= contribution;
         });
-        balances[payer] += amount - Object.entries(manualContributions).filter(([p, v]) => p === payer).reduce((s, [p, v]) => s + v, 0);
+        balances[payer] += amount;
       }
     });
 
@@ -79,8 +79,14 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
     return transactions;
   };
 
-  const balances = calculateBalances();
-  const transactions = generateTransactionBreakdown();
+  const [balances, setBalances] = useState<{ [participant: string]: number }>({});
+  const [transactions, setTransactions] = useState<string[]>([]);
+
+  useEffect(() => {
+    setBalances(calculateBalances());
+    setTransactions(generateTransactionBreakdown());
+  }, [participants, expenses]);
+
 
   return (
     <Card className="w-full">
