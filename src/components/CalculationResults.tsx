@@ -55,32 +55,60 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
       }
     });
 
-    const transactions: string[] = [];
+    const transactions: { [expenseId: string]: string[] } = {};
 
-    // Generate transactions to settle debts
-    while (Object.keys(positiveBalances).length > 0 && Object.keys(negativeBalances).length > 0) {
-      const creditor = Object.keys(positiveBalances).reduce((a, b) => positiveBalances[a] > positiveBalances[b] ? a : b);
-      const debtor = Object.keys(negativeBalances).reduce((a, b) => negativeBalances[a] > negativeBalances[b] ? a : b);
-      const amount = Math.min(positiveBalances[creditor], negativeBalances[debtor]);
+    expenses.forEach((expense) => {
+      transactions[expense.id] = [];
+      const { id, name, payer, amount, involvedParticipants, splitEvenly, manualContributions } = expense;
 
-      transactions.push(`${debtor} owes ${creditor} $${amount.toFixed(2)}`);
+      const expenseBalances: { [participant: string]: number } = {};
+      involvedParticipants.forEach(participant => expenseBalances[participant] = 0);
 
-      positiveBalances[creditor] -= amount;
-      negativeBalances[debtor] -= amount;
-
-      if (positiveBalances[creditor] === 0) {
-        delete positiveBalances[creditor];
+      if (splitEvenly) {
+        const splitAmount = amount / involvedParticipants.length;
+        involvedParticipants.forEach(participant => {
+          expenseBalances[participant] -= splitAmount;
+        });
+        expenseBalances[payer] += amount;
+      } else if (manualContributions) {
+        Object.entries(manualContributions).forEach(([participant, contribution]) => {
+          expenseBalances[participant] -= contribution;
+        });
+        expenseBalances[payer] += amount;
       }
-      if (negativeBalances[debtor] === 0) {
-        delete negativeBalances[debtor];
-      }
-    }
 
+      const positiveExpenseBalances: { [participant: string]: number } = {};
+      const negativeExpenseBalances: { [participant: string]: number } = {};
+
+      Object.entries(expenseBalances).forEach(([participant, balance]) => {
+        if (balance > 0) {
+          positiveExpenseBalances[participant] = balance;
+        } else if (balance < 0) {
+          negativeExpenseBalances[participant] = Math.abs(balance);
+        }
+      });
+      while (Object.keys(positiveExpenseBalances).length > 0 && Object.keys(negativeExpenseBalances).length > 0) {
+        const creditor = Object.keys(positiveExpenseBalances).reduce((a, b) => positiveExpenseBalances[a] > positiveExpenseBalances[b] ? a : b);
+        const debtor = Object.keys(negativeExpenseBalances).reduce((a, b) => negativeExpenseBalances[a] > negativeExpenseBalances[b] ? a : b);
+        const settleAmount = Math.min(positiveExpenseBalances[creditor], negativeExpenseBalances[debtor]);
+        transactions[id].push(`${debtor} owes ${creditor} $${settleAmount.toFixed(2)} for ${name}`);
+
+        positiveExpenseBalances[creditor] -= settleAmount;
+        negativeExpenseBalances[debtor] -= settleAmount;
+
+        if (positiveExpenseBalances[creditor] === 0) {
+          delete positiveExpenseBalances[creditor];
+        }
+        if (negativeExpenseBalances[debtor] === 0) {
+          delete negativeExpenseBalances[debtor];
+        }
+      }
+    });
     return transactions;
   };
 
   const [balances, setBalances] = useState<{ [participant: string]: number }>({});
-  const [transactions, setTransactions] = useState<string[]>([]);
+  const [transactions, setTransactions] = useState<{ [expenseId: string]: string[] }>({});
 
   useEffect(() => {
     setBalances(calculateBalances());
@@ -113,11 +141,16 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
           <AccordionItem value="transactionBreakdown">
             <AccordionTrigger>Transaction Breakdown</AccordionTrigger>
             <AccordionContent>
-              <ul>
-                {transactions.map((transaction, index) => (
-                  <li key={index}>{transaction}</li>
-                ))}
-              </ul>
+              {Object.entries(transactions).map(([expenseId, expenseTransactions]) => (
+                <div key={expenseId}>
+                  <h4 className="font-semibold">Expense ID: {expenseId}</h4>
+                  <ul>
+                    {expenseTransactions.map((transaction, index) => (
+                      <li key={index}>{transaction}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </AccordionContent>
           </AccordionItem>
         </Accordion>
