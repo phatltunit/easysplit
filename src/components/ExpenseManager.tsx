@@ -254,7 +254,6 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                       <p className="font-semibold">{expense.name}</p>
                     </div>
                     <Button
-                      variant="destructive"
                       size="icon"
                       onClick={() => deleteExpense(expense.id)}
                     >
