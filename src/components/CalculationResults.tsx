@@ -251,23 +251,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
           <AccordionItem value="transactionBreakdown">
             <AccordionTrigger>Transaction Breakdown</AccordionTrigger>
             <AccordionContent>
-              <h4 className="text-md font-semibold mb-2">By Expense</h4>
-              {Object.entries(transactions?.byExpense || {}).map(([expenseId, expenseTransactions]) => (
-                <div key={expenseId} className="mb-4">
-                  <h5 className="text-sm font-medium">Expense: {expenses.find(e => e.id === expenseId)?.name}</h5>
-                  <ul>
-                    {Object.entries(expenseTransactions).map(([debtor, creditors]) => (
-                      Object.entries(creditors).map(([creditor, amount]) => (
-                        <li key={`${debtor}-${creditor}`}>
-                          {debtor} owes {creditor} {formatCurrency(amount)}
-                        </li>
-                      ))
-                    ))}
-                  </ul>
-                </div>
-              ))}
-
-              <h4 className="text-md font-semibold mt-4 mb-2">Summary</h4>
+            <h4 className="text-md font-semibold mt-4 mb-2">Summary</h4>
               <ul>
                   {Object.entries(transactions?.summary || {}).map(([debtor, creditors]) => (
                       Object.entries(creditors).map(([creditor, amount]) => {
@@ -283,6 +267,24 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
                       })
                   ))}
               </ul>
+              <h4 className="text-md font-semibold mb-2">By Expense</h4>
+              {Object.entries(transactions?.byExpense || {}).map(([expenseId, expenseTransactions]) => (
+                <div key={expenseId} className="mb-4">
+                  <h5 className="text-sm font-medium">Expense: {expenses.find(e => e.id === expenseId)?.name}</h5>
+                  <ul>
+                    {Object.entries(expenseTransactions).map(([debtor, creditors]) => (
+                      Object.entries(creditors).map(([creditor, amount]) => (
+                        <>
+                          <li key={`${debtor}-${creditor}`}>
+                            {debtor} owes {creditor} {formatCurrency(amount)}
+                          </li>
+                          <hr className="my-4" />
+                        </>
+                      ))
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </AccordionContent>
           </AccordionItem>
         </Accordion>
