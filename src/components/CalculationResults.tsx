@@ -55,10 +55,9 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
       }
     });
 
-    const transactions: { [expenseId: string]: string[] } = {};
+    const transactions: { [debtor: string]: { [creditor: string]: number } } = {};
 
     expenses.forEach((expense) => {
-      transactions[expense.id] = [];
       const { id, name, payer, amount, involvedParticipants, splitEvenly, manualContributions } = expense;
 
       const expenseBalances: { [participant: string]: number } = {};
@@ -91,7 +90,14 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
         const creditor = Object.keys(positiveExpenseBalances).reduce((a, b) => positiveExpenseBalances[a] > positiveExpenseBalances[b] ? a : b);
         const debtor = Object.keys(negativeExpenseBalances).reduce((a, b) => negativeExpenseBalances[a] > negativeExpenseBalances[b] ? a : b);
         const settleAmount = Math.min(positiveExpenseBalances[creditor], negativeExpenseBalances[debtor]);
-        transactions[id].push(`${debtor} owes ${creditor} $${settleAmount.toFixed(2)} for ${name}`);
+
+        if (!transactions[debtor]) {
+          transactions[debtor] = {};
+        }
+        if (!transactions[debtor][creditor]) {
+          transactions[debtor][creditor] = 0;
+        }
+        transactions[debtor][creditor] += settleAmount;
 
         positiveExpenseBalances[creditor] -= settleAmount;
         negativeExpenseBalances[debtor] -= settleAmount;
@@ -108,7 +114,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
   };
 
   const [balances, setBalances] = useState<{ [participant: string]: number }>({});
-  const [transactions, setTransactions] = useState<{ [expenseId: string]: string[] }>({});
+  const [transactions, setTransactions<{ [debtor: string]: { [creditor: string]: number } }>({});
 
   useEffect(() => {
     setBalances(calculateBalances());
@@ -141,16 +147,15 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
           <AccordionItem value="transactionBreakdown">
             <AccordionTrigger>Transaction Breakdown</AccordionTrigger>
             <AccordionContent>
-              {Object.entries(transactions).map(([expenseId, expenseTransactions]) => (
-                <div key={expenseId}>
-                  <h4 className="font-semibold">Expense ID: {expenseId}</h4>
-                  <ul>
-                    {expenseTransactions.map((transaction, index) => (
-                      <li key={index}>{transaction}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              <ul>
+                {Object.entries(transactions).map(([debtor, creditors]) => (
+                  Object.entries(creditors).map(([creditor, amount]) => (
+                    <li key={`${debtor}-${creditor}`}>
+                      {debtor} owes {creditor} ${amount.toFixed(2)}
+                    </li>
+                  ))
+                ))}
+              </ul>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

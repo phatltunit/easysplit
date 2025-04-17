@@ -240,11 +240,27 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
               {expenses.map((expense) => (
                 <div
                   key={expense.id}
-                  className="flex items-center justify-between mb-2"
+                  className="flex items-start justify-between mb-2"
                 >
-                  <span>
-                    {expense.name} - ${expense.amount} paid by {expense.payer} - Involved: {expense.involvedParticipants.join(', ')}
-                  </span>
+                  <div className="flex-1">
+                    <p className="font-semibold">{expense.name}</p>
+                    <p>Amount: ${expense.amount}</p>
+                    <p>Payer: {expense.payer}</p>
+                    <p>Involved: {expense.involvedParticipants.join(', ')}</p>
+                    <p>Split Evenly: {expense.splitEvenly ? 'Yes' : 'No'}</p>
+                    {!expense.splitEvenly && expense.manualContributions && (
+                      <div>
+                        <p>Manual Contributions:</p>
+                        <ul>
+                          {Object.entries(expense.manualContributions).map(([participant, contribution]) => (
+                            <li key={participant}>
+                              {participant}: ${contribution}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                   <Button
                     variant="destructive"
                     size="icon"
