@@ -19,9 +19,9 @@ interface TransactionBreakdown {
   },
   summary: {
     [debtor: string]: {
-      [creditor: string]: number
-    }
-  }
+      [creditor: string]: number;
+    };
+  };
 }
 
 export const CalculationResults: React.FC<CalculationResultsProps> = ({
@@ -145,26 +145,74 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
     });
 
     // Summarize transactions across all expenses
-    const summaryTransactions: { [debtor: string]: { [creditor: string]: number } } = {};
-    Object.values(transactionsByExpense).forEach(expenseTransactions => {
-      Object.entries(expenseTransactions).forEach(([debtor, creditors]) => {
-        Object.entries(creditors).forEach(([creditor, amount]) => {
-          if (!summaryTransactions[debtor]) {
-            summaryTransactions[debtor] = {};
-          }
-          if (!summaryTransactions[debtor][creditor]) {
-            summaryTransactions[debtor][creditor] = 0;
-          }
-          summaryTransactions[debtor][creditor] += amount;
+    const summaryTransactions: { [participant: string]: { [participant: string]: number } } = {};
+
+      // Initialize the summaryTransactions object
+      participants.forEach(debtor => {
+          summaryTransactions[debtor] = {};
+          participants.forEach(creditor => {
+              if (debtor !== creditor) {
+                  summaryTransactions[debtor][creditor] = 0;
+              }
+          });
+      });
+
+      Object.values(transactionsByExpense).forEach(expenseTransactions => {
+        Object.entries(expenseTransactions).forEach(([debtor, creditors]) => {
+          Object.entries(creditors).forEach(([creditor, amount]) => {
+            summaryTransactions[debtor][creditor] += amount;
+          });
         });
       });
-    });
+
+      // Consolidate debts: debtor owes creditor vs creditor owes debtor
+      for (const debtor in summaryTransactions) {
+          for (const creditor in summaryTransactions[debtor]) {
+              if (summaryTransactions[creditor] && summaryTransactions[creditor][debtor]) {
+                  const debtorToCreditor = summaryTransactions[debtor][creditor] || 0;
+                  const creditorToDebtor = summaryTransactions[creditor][debtor] || 0;
+
+                  if (debtorToCreditor > creditorToDebtor) {
+                      summaryTransactions[debtor][creditor] = debtorToCreditor - creditorToDebtor;
+                      delete summaryTransactions[creditor][debtor];
+                  } else if (creditorToDebtor > debtorToCreditor) {
+                      summaryTransactions[creditor][debtor] = creditorToDebtor - debtorToCreditor;
+                      delete summaryTransactions[debtor][creditor];
+                  } else {
+                      delete summaryTransactions[debtor][creditor];
+                      delete summaryTransactions[creditor][debtor];
+                  }
+              }
+          }
+      }
+
+       // Correctly consolidate debts, ensuring amounts are non-negative
+       for (const debtor in summaryTransactions) {
+        for (const creditor in summaryTransactions[debtor]) {
+            if (summaryTransactions[creditor] && summaryTransactions[creditor][debtor]) {
+                let debtorToCreditor = summaryTransactions[debtor][creditor] || 0;
+                let creditorToDebtor = summaryTransactions[creditor][debtor] || 0;
+
+                if (debtorToCreditor > creditorToDebtor) {
+                    summaryTransactions[debtor][creditor] = debtorToCreditor - creditorToDebtor;
+                    delete summaryTransactions[creditor][debtor];
+                } else if (creditorToDebtor > debtorToCreditor) {
+                    // Invert the transaction: Debtor now becomes the creditor
+                    summaryTransactions[creditor][debtor] = creditorToDebtor - debtorToCreditor;
+                    delete summaryTransactions[debtor][creditor];
+                } else {
+                    delete summaryTransactions[debtor][creditor];
+                    delete summaryTransactions[creditor][debtor];
+                }
+            }
+        }
+    }
 
     return { byExpense: transactionsByExpense, summary: summaryTransactions };
   };
 
   const [balances, setBalances] = useState<{ [participant: string]: number }>({});
-  const [transactions, setTransactions] = useState<TransactionBreakdown>({ byExpense: {}, summary: {} });
+  const [transactions, setTransactions]: any = useState({ byExpense: {}, summary: {} });
 
   useEffect(() => {
     setBalances(calculateBalances());
@@ -214,13 +262,19 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
 
               <h4 className="text-md font-semibold mt-4 mb-2">Summary</h4>
               <ul>
-                {Object.entries(transactions?.summary || {}).map(([debtor, creditors]) => (
-                  Object.entries(creditors).map(([creditor, amount]) => (
-                    <li key={`${debtor}-${creditor}`}>
-                      {debtor} owes {creditor} ${amount.toFixed(2)} (Total)
-                    </li>
-                  ))
-                ))}
+                  {Object.entries(transactions?.summary || {}).map(([debtor, creditors]) => (
+                      Object.entries(creditors).map(([creditor, amount]) => {
+                          if (debtor !== creditor && amount > 0) {
+                              const transactionKey = `${debtor}-${creditor}`;
+                              return (
+                                  <li key={transactionKey}>
+                                      {debtor} owes {creditor} ${amount.toFixed(2)} (Total)
+                                  </li>
+                              );
+                          }
+                          return null;
+                      })
+                  ))}
               </ul>
             </AccordionContent>
           </AccordionItem>
@@ -228,4 +282,4 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
       </CardContent>
     </Card>
   );
-};
+}
