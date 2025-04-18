@@ -52,8 +52,8 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
   const addExpense = () => {
     if (!expenseName || !amount || !payer || involvedParticipants.length === 0) {
       toast({
-        title: "Error!",
-        description: "Please fill in all fields.",
+        title: "Lỗi!",
+        description: "Vui lòng điền đầy đủ thông tin.",
         variant: "destructive",
       });
       return;
@@ -66,9 +66,9 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
       );
       if (totalManualContribution !== amount) {
         toast({
-          title: "Error!",
+          title: "Lỗi!",
           description:
-            "Sum of manual contributions does not match the total expense amount.",
+            "Tổng tiền của các thành viên không bằng tổng tiền chi tiêu",
           variant: "destructive",
         });
         return;
@@ -94,16 +94,16 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
     setManualContributions({});
 
     toast({
-      title: "Expense added!",
-      description: `Added expense ${expenseName}.`,
+      title: "Chi tiêu đã được thêm!",
+      description: `Đã thêm chi tiêu ${expenseName}.`,
     });
   };
 
   const deleteExpense = (expenseId: string) => {
     setExpenses(expenses.filter((expense) => expense.id !== expenseId));
     toast({
-      title: "Expense deleted!",
-      description: `Expense deleted successfully.`,
+      title: "Chi tiêu đã được xóa!",
+      description: `Đã xóa chi tiêu`,
     });
   };
 
@@ -128,13 +128,13 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Manage Expenses</CardTitle>
-        <CardDescription>Add, edit, or delete expenses.</CardDescription>
+        <CardTitle>Quản lý chi tiêu</CardTitle>
+        <CardDescription>Thêm, chỉnh sửa hoặc xóa chi tiêu</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div>
-            <Label htmlFor="expenseName">Expense Name</Label>
+            <Label htmlFor="expenseName">Tên chi tiêu</Label>
             <Input
               type="text"
               id="expenseName"
@@ -143,7 +143,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             />
           </div>
           <div>
-            <Label htmlFor="amount">Amount</Label>
+            <Label htmlFor="amount">Số tiền</Label>
             <Input
               type="number"
               id="amount"
@@ -152,10 +152,10 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             />
           </div>
           <div>
-            <Label htmlFor="payer">Payer</Label>
+            <Label htmlFor="payer">Người trả</Label>
             <Select value={payer} onValueChange={setPayer}>
               <SelectTrigger>
-                <SelectValue placeholder="Select payer" />
+                <SelectValue placeholder="Chọn người trả" />
               </SelectTrigger>
               <SelectContent>
                 {participants.map((participant) => (
@@ -167,12 +167,12 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             </Select>
           </div>
           <div>
-            <Label>Involved Participants</Label>
+            <Label>Thành viên</Label>
             <div className="flex items-center space-x-2">
               <Button size="sm" onClick={toggleSelectAll}>
                 {involvedParticipants.length === participants.length
-                  ? "Deselect All"
-                  : "Select All"}
+                  ? "Hủy chọn tất cả"
+                  : "Chọn tất cả"}
               </Button>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
@@ -202,7 +202,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             </div>
           </div>
           <div>
-            <Label htmlFor="splitEvenly">Split Evenly</Label>
+            <Label htmlFor="splitEvenly">Chia đều</Label>
             <Switch
               id="splitEvenly"
               checked={splitEvenly}
@@ -211,7 +211,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
           </div>
           {!splitEvenly && (
             <div>
-              <Label>Manual Contributions</Label>
+              <Label>Chia thủ công</Label>
               <div className="grid gap-2">
                 {participants.map((participant) => (
                   <div
@@ -237,11 +237,11 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
               </div>
             </div>
           )}
-          <Button onClick={addExpense}>Add Expense</Button>
+          <Button onClick={addExpense}>Thêm chi tiêu</Button>
         </div>
 
         <div className="mt-8">
-          <h3 className="text-xl font-semibold mb-4">Existing Expenses</h3>
+          <h3 className="text-xl font-semibold mb-4">Danh sách chi tiêu</h3>
           <ScrollArea className="h-[200px] w-full rounded-md border">
             <div className="p-4">
               {expenses.map((expense) => (
@@ -258,16 +258,16 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                       onClick={() => deleteExpense(expense.id)}
                     >
                       <Icons.trash className="h-4 w-4" />
-                      <span className="sr-only">Delete</span>
+                      <span className="sr-only"></span>
                     </Button>
                   </div>
-                  <p>Amount: {formatCurrency(expense.amount)}</p>
-                  <p>Payer: {expense.payer}</p>
-                  <p>Involved: {expense.involvedParticipants.join(', ')}</p>
-                  <p>Split Evenly: {expense.splitEvenly ? 'Yes' : 'No'}</p>
+                  <p>Số tiền: {formatCurrency(expense.amount)}</p>
+                  <p>Người trả: {expense.payer}</p>
+                  <p>Thành viên: {expense.involvedParticipants.join(', ')}</p>
+                  <p>Chia đều: {expense.splitEvenly ? 'Yes' : 'No'}</p>
                   {!expense.splitEvenly && expense.manualContributions && (
                     <div>
-                      <p>Manual Contributions:</p>
+                      <p>Chia thủ công:</p>
                       <ul>
                         {Object.entries(expense.manualContributions).map(([participant, contribution]) => (
                           <li key={participant}>

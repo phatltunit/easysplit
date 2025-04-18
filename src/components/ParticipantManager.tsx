@@ -37,13 +37,13 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
       setParticipants([...participants, newParticipant]);
       setNewParticipant("");
       toast({
-        title: "Participant added!",
-        description: `Added ${newParticipant} to the list.`,
+        title: "Thêm thành viên",
+        description: `Đã thêm ${newParticipant} vào danh sách`,
       });
     } else if (participants.includes(newParticipant)) {
       toast({
-        title: "Error!",
-        description: "Participant already exists.",
+        title: "Lỗi!",
+        description: "Thành viên đã tồn tại",
         variant: "destructive",
       });
     }
@@ -56,9 +56,9 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
       )
     ) {
       toast({
-        title: "Cannot delete!",
+        title: "Không thể xóa!",
         description:
-          "Participant is associated with an existing expense and cannot be deleted.",
+          "Thành viên trong một chi tiêu không thể bị xóa.",
         variant: "destructive",
       });
       return;
@@ -68,29 +68,28 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
       participants.filter((participant) => participant !== participantToDelete)
     );
     toast({
-      title: "Participant deleted!",
-      description: `Deleted ${participantToDelete} from the list.`,
+      title: "Đã xóa thành viên!",
+      description: `Đã xóa ${participantToDelete} khỏi danh sách.`,
     });
   };
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Manage Participants</CardTitle>
+        <CardTitle>Quản lý thành viên</CardTitle>
         <CardDescription>
-          Add, edit, or delete participants. Participants associated with
-          existing expenses cannot be deleted.
+          Thêm, chỉnh sửa hoặc xóa thành viên. Các thành viên đã tham gia vào chi tiêu không thể bị xóa.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-2 mb-4">
           <Input
             type="text"
-            placeholder="Participant Name"
+            placeholder="Tên thành viên"
             value={newParticipant}
             onChange={(e) => setNewParticipant(e.target.value)}
           />
-          <Button onClick={addParticipant}>Add</Button>
+          <Button onClick={addParticipant}>Thêm</Button>
         </div>
         <ScrollArea className="h-[200px] w-full rounded-md border">
           <div className="p-4">
@@ -107,7 +106,7 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
                   disabled={isDeleteDisabled}
                 >
                   <Icons.trash className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
+                  <span className="sr-only">Xóa</span>
                 </Button>
               </div>
             ))}
