@@ -229,15 +229,15 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Calculation Results</CardTitle>
+        <CardTitle>Kết quả tính toán</CardTitle>
         <CardDescription>
-          View individual contributions and transaction breakdown.
+          Tổng hợp đóng góp cá nhân và phân tích giao dịch
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Accordion type="single" collapsible>
           <AccordionItem value="individualSummary">
-            <AccordionTrigger>Individual Summary</AccordionTrigger>
+            <AccordionTrigger>Tổng hợp cá nhân</AccordionTrigger>
             <AccordionContent>
               <ul>
                 {Object.entries(balances).map(([participant, balance]) => (
@@ -249,10 +249,10 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="transactionBreakdown">
-            <AccordionTrigger>Transaction Breakdown</AccordionTrigger>
+            <AccordionTrigger>Phân tích giao dịch</AccordionTrigger>
             <AccordionContent>
               <div className="rounded-md border mb-4 p-4">
-                <h4 className="text-md font-semibold mt-4 mb-2">Summary</h4>
+                <h4 className="text-md font-semibold mt-4 mb-2">Tổng hợp</h4>
                   <ul>
                       {Object.entries(transactions?.summary || {}).map(([debtor, creditors]) => (
                           Object.entries(creditors).map(([creditor, amount]) => {
@@ -260,7 +260,7 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
                                   const transactionKey = `${debtor}-${creditor}`;
                                   return (
                                       <li key={transactionKey}>
-                                          {debtor} owes {creditor} {formatCurrency(amount)} (Total)
+                                          {debtor} nợ {creditor} {formatCurrency(amount)} (Total)
                                       </li>
                                   );
                               }
@@ -272,18 +272,18 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
               </div>
 
               <div className="rounded-md border mb-4 p-4">
-              <h4 className="text-md font-semibold mb-2">By Expense</h4>
+              <h4 className="text-md font-semibold mb-2">Theo chi tiêu</h4>
               {Object.entries(transactions?.byExpense || {}).map(([expenseId, expenseTransactions]) => (
                 <>
                 <hr className="my-2" />
                 <div key={expenseId} className="mb-4">
-                  <h5 className="text-sm font-medium">Expense: {expenses.find(e => e.id === expenseId)?.name}</h5>
+                  <h5 className="text-sm font-medium">Chi tiêu: {expenses.find(e => e.id === expenseId)?.name}</h5>
                   <ul>
                     {Object.entries(expenseTransactions).map(([debtor, creditors]) => (
                       Object.entries(creditors).map(([creditor, amount]) => (
                         <>
                           <li key={`${debtor}-${creditor}`}>
-                            {debtor} owes {creditor} {formatCurrency(amount)}
+                            {debtor} nợ {creditor} {formatCurrency(amount)}
                           </li>
                         </>
                       ))
