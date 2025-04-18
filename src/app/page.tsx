@@ -36,36 +36,30 @@ export default function Home() {
           <TabsTrigger value="results">Kết quả</TabsTrigger>
         </TabsList>
         <TabsContent value="participants" className="mt-6">
-          <Card>
-            <CardContent className="p-4">
+        
               <ParticipantManager
                 participants={participants}
                 setParticipants={setParticipants}
                 expenses={expenses}
               />
-            </CardContent>
-          </Card>
+         
         </TabsContent>
         <TabsContent value="expenses" className="mt-6">
-          <Card>
-            <CardContent className="p-4">
+        
               <ExpenseManager
                 participants={participants}
                 expenses={expenses}
                 setExpenses={setExpenses}
               />
-            </CardContent>
-          </Card>
+         
         </TabsContent>
         <TabsContent value="results" className="mt-6">
-          <Card>
-            <CardContent className="p-4">
+       
               <CalculationResults
                 participants={participants}
                 expenses={expenses}
               />
-            </CardContent>
-          </Card>
+         
         </TabsContent>
       </Tabs>
 

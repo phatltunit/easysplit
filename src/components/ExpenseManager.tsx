@@ -242,13 +242,13 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
 
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-4">Danh sách chi tiêu</h3>
-          <ScrollArea className="h-[200px] w-full rounded-md border">
+          <ScrollArea className="h-[200px] w-full">
             <div className="p-4">
               {expenses.map((expense) => (
                 <div
                   key={expense.id}
-                  className="mb-4 p-4 rounded-md border"
                 >
+                  <hr className="my-2" />
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <p className="font-semibold">{expense.name}</p>
