@@ -251,24 +251,31 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
           <AccordionItem value="transactionBreakdown">
             <AccordionTrigger>Transaction Breakdown</AccordionTrigger>
             <AccordionContent>
-            <h4 className="text-md font-semibold mt-4 mb-2">Summary</h4>
-              <ul>
-                  {Object.entries(transactions?.summary || {}).map(([debtor, creditors]) => (
-                      Object.entries(creditors).map(([creditor, amount]) => {
-                          if (debtor !== creditor && amount > 0) {
-                              const transactionKey = `${debtor}-${creditor}`;
-                              return (
-                                  <li key={transactionKey}>
-                                      {debtor} owes {creditor} {formatCurrency(amount)} (Total)
-                                  </li>
-                              );
-                          }
-                          return null;
-                      })
-                  ))}
-              </ul>
+              <div className="rounded-md border mb-4 p-4">
+                <h4 className="text-md font-semibold mt-4 mb-2">Summary</h4>
+                  <ul>
+                      {Object.entries(transactions?.summary || {}).map(([debtor, creditors]) => (
+                          Object.entries(creditors).map(([creditor, amount]) => {
+                              if (debtor !== creditor && amount > 0) {
+                                  const transactionKey = `${debtor}-${creditor}`;
+                                  return (
+                                      <li key={transactionKey}>
+                                          {debtor} owes {creditor} {formatCurrency(amount)} (Total)
+                                      </li>
+                                  );
+                              }
+                              return null;
+                          })
+                      ))}
+                
+                  </ul>
+              </div>
+
+              <div className="rounded-md border mb-4 p-4">
               <h4 className="text-md font-semibold mb-2">By Expense</h4>
               {Object.entries(transactions?.byExpense || {}).map(([expenseId, expenseTransactions]) => (
+                <>
+                <hr className="my-2" />
                 <div key={expenseId} className="mb-4">
                   <h5 className="text-sm font-medium">Expense: {expenses.find(e => e.id === expenseId)?.name}</h5>
                   <ul>
@@ -278,13 +285,14 @@ export const CalculationResults: React.FC<CalculationResultsProps> = ({
                           <li key={`${debtor}-${creditor}`}>
                             {debtor} owes {creditor} {formatCurrency(amount)}
                           </li>
-                          <hr className="my-4" />
                         </>
                       ))
                     ))}
                   </ul>
                 </div>
+                </>
               ))}
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
