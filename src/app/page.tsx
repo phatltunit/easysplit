@@ -27,13 +27,13 @@ export default function Home() {
   return (
     <div className="container mx-auto py-10 px-4">
       <Toaster />
-      <h1 className="text-3xl font-bold mb-6 text-center">BillSplitter</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Bill Splitter</h1>
 
       <Tabs defaultValue="participants" className="w-full">
         <TabsList className="justify-center">
-          <TabsTrigger value="participants">Participants</TabsTrigger>
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
-          <TabsTrigger value="results">Results</TabsTrigger>
+          <TabsTrigger value="participants">Thành viên</TabsTrigger>
+          <TabsTrigger value="expenses">Chi tiêu</TabsTrigger>
+          <TabsTrigger value="results">Kết quả</TabsTrigger>
         </TabsList>
         <TabsContent value="participants" className="mt-6">
           <Card>
